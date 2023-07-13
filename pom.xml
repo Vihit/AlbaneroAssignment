@@ -36,7 +36,20 @@
             </goals>
           </execution>
         </executions>
-      </plugin>
+      </plugin><plugin>
+      <artifactId>maven-dependency-plugin</artifactId>
+      <executions>
+        <execution>
+          <phase>install</phase>
+          <goals>
+            <goal>copy-dependencies</goal>
+          </goals>
+          <configuration>
+            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+          </configuration>
+        </execution>
+      </executions>
+    </plugin>
     </plugins>
   </build>
 
@@ -68,6 +81,11 @@
       <artifactId>spark-hive_2.11</artifactId>
       <version>2.4.7</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-library</artifactId>
+      <version>2.12.10</version>
     </dependency>
   </dependencies>
 </project>
