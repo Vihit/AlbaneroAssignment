@@ -26,9 +26,8 @@ object Main {
     probableMatchQueryColumns.foreach(column=> {
       updatedCrossJoinedUserDetails = calculateLevenshtein(updatedCrossJoinedUserDetails,column)
     })
-    updatedCrossJoinedUserDetails.show
+
     val probableMatchingRows = updatedCrossJoinedUserDetails.withColumn("avg_lev",expr("("+probableMatchQueryColumns.map(column=>"lev_"+column).reduce(_+"+"+_)+")"))
-//      .filter("avg_lev <=2 AND "+probableMatchQueryColumns.map(column=>"lev_"+column+" <= 2").reduce(_+" AND "+_))
       .filter("avg_lev <= "+probableMatchQueryColumns.length*0.2)
       .selectExpr("left.id as leftId","right.id as rightId")
       .withColumn("set",array_sort(array("leftId","rightId")))
@@ -37,6 +36,8 @@ object Main {
       .select($"leftId",explode($"set").as("set"))
 
     userDetails.join(defineGroupsForIds(idSet),Seq("id"),"inner").write.option("header","true").mode("overwrite").csv("src/main/resources/output/")
+
+    spark.stop()
   }
 
   def calculateLevenshtein(df:DataFrame,column:String):DataFrame = {
